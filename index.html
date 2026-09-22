@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ห้องเตรียมสอบ: อวกาศและแสง</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chonburi&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-deep:#0B1026;
+    --navy-mid:#141B36;
+    --navy-card:#1B2447;
+    --gold:#FFC857;
+    --teal:#3FD6C5;
+    --violet:#7C6FF0;
+    --coral:#FF6F6F;
+    --ink:#F4F6FB;
+    --ink-dim:#B9C2E0;
+    --line: rgba(244,246,251,0.12);
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-sizing: border-box;
+  }
+  @media (prefers-color-scheme: light){
+    :root:not([data-theme="dark"]){
+      --navy-deep:#0B1026;
+      --navy-mid:#141B36;
+      --navy-card:#1B2447;
+      --ink:#F4F6FB;
+      --ink-dim:#B9C2E0;
+    }
+  }
+  *{box-sizing:border-box;}
+  html{scroll-padding-top: env(safe-area-inset-top, 0px); height:100%;}
+  body{
+    height:100%;
+    margin:0;
+    background: radial-gradient(1200px 800px at 20% -10%, #1a2350 0%, var(--navy-deep) 55%) fixed,
+                var(--navy-deep);
+    color: var(--ink);
+    font-family:'Sarabun', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x:hidden;
+  }
+  .stars{
+    position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.55;
+    background-image:
+      radial-gradient(1.5px 1.5px at 10% 20%, #fff 100%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 80% 10%, #fff 100%, transparent 100%),
+      radial-gradient(1px 1px at 40% 60%, #fff 100%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 60% 80%, #fff 100%, transparent 100%),
+      radial-gradient(1px 1px at 90% 50%, #fff 100%, transparent 100%),
+      radial-gradient(1px 1px at 25% 85%, #fff 100%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 70% 35%, #fff 100%, transparent 100%);
+    background-repeat: repeat;
+    background-size: 400px 400px;
+  }
+  .wrap{ position:relative; z-index:1; max-width:640px; margin:0 auto; padding:20px 18px 48px; }
+
+  header.top{
+    text-align:center;
+    padding: 6px 0 18px;
+  }
+  header.top .eyebrow{
+    font-family:'Chonburi', serif;
+    color: var(--gold);
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    margin-bottom:4px;
+  }
+  header.top h1{
+    font-family:'Chonburi', serif;
+    font-size: 26px;
+    line-height:1.3;
+    margin: 0 0 6px;
+    background: linear-gradient(90deg, var(--gold), var(--teal));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  header.top p{
+    color: var(--ink-dim);
+    font-size: 14.5px;
+    margin:0;
+  }
+
+  nav.tabs{
+    display:flex;
+    gap:8px;
+    background: var(--navy-mid);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:5px;
+    margin: 18px 0 20px;
+  }
+  nav.tabs button{
+    flex:1;
+    border:none;
+    background:transparent;
+    color: var(--ink-dim);
+    font-family:'Sarabun',sans-serif;
+    font-weight:600;
+    font-size:15px;
+    padding:11px 6px;
+    border-radius:10px;
+    cursor:pointer;
+    transition: background .2s ease, color .2s ease;
+  }
+  nav.tabs button.active{
+    background: linear-gradient(135deg, var(--violet), #5B4FD1);
+    color:#fff;
+    box-shadow: 0 4px 14px rgba(124,111,240,0.35);
+  }
+
+  .view{ display:none; }
+  .view.active{ display:block; }
+
+  /* ---------- Summary ---------- */
+  .topic-card{
+    background: var(--navy-card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    margin-bottom:12px;
+    overflow:hidden;
+  }
+  .topic-head{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:14px 16px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .topic-head .icon{
+    font-size:22px;
+    width:38px; height:38px;
+    border-radius:10px;
+    display:flex; align-items:center; justify-content:center;
+    background: rgba(255,255,255,0.06);
+    flex-shrink:0;
+  }
+  .topic-head h3{
+    margin:0;
+    font-size:16px;
+    font-weight:700;
+    flex:1;
+  }
+  .topic-head .chev{
+    color: var(--ink-dim);
+    font-size:13px;
+    transition: transform .2s ease;
+  }
+  .topic-card.open .chev{ transform: rotate(180deg); }
+  .topic-body{
+    max-height:0;
+    overflow:hidden;
+    transition: max-height .25s ease;
+    padding: 0 16px;
+  }
+  .topic-card.open .topic-body{
+    max-height:900px;
+    padding: 0 16px 16px;
+  }
+  .topic-body ul{
+    margin:0; padding-left:20px;
+    color: var(--ink-dim);
+    font-size: 14.5px;
+    line-height:1.7;
+  }
+  .topic-body li{ margin-bottom:6px; }
+  .topic-body b{ color: var(--ink); }
+  .topic-body .tag{
+    display:inline-block;
+    font-size:12px;
+    font-weight:700;
+    color: var(--navy-deep);
+    background: var(--teal);
+    border-radius:6px;
+    padding:1px 7px;
+    margin-right:4px;
+  }
+
+  /* ---------- Game: setup ---------- */
+  .panel{
+    background: var(--navy-card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:20px;
+    margin-bottom:16px;
+  }
+  .panel h2{
+    font-family:'Chonburi', serif;
+    font-size:19px;
+    margin:0 0 4px;
+    color: var(--gold);
+  }
+  .panel p.sub{
+    color: var(--ink-dim);
+    font-size:14px;
+    margin:0 0 16px;
+  }
+  .chip-grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:9px;
+    margin-bottom:6px;
+  }
+  .chip{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:11px 10px;
+    border-radius:12px;
+    border:1.5px solid var(--line);
+    background: rgba(255,255,255,0.03);
+    cursor:pointer;
+    font-size:13.5px;
+    font-weight:600;
+    color: var(--ink-dim);
+    transition: all .15s ease;
+  }
+  .chip .em{ font-size:17px; }
+  .chip.selected{
+    border-color: var(--teal);
+    background: rgba(63,214,197,0.14);
+    color: var(--ink);
+  }
+  .chip-all{
+    text-align:center;
+    font-size:13px;
+    color: var(--teal);
+    font-weight:700;
+    cursor:pointer;
+    margin: 10px 0 4px;
+    text-decoration: underline;
+    text-underline-offset:3px;
+  }
+  .length-row{
+    display:flex;
+    gap:8px;
+    margin-top:14px;
+  }
+  .len-btn{
+    flex:1;
+    padding:10px 4px;
+    border-radius:12px;
+    border:1.5px solid var(--line);
+    background: rgba(255,255,255,0.03);
+    color: var(--ink-dim);
+    font-weight:700;
+    font-size:14px;
+    cursor:pointer;
+  }
+  .len-btn.selected{
+    border-color: var(--gold);
+    background: rgba(255,200,87,0.14);
+    color: var(--ink);
+  }
+  .cta{
+    width:100%;
+    margin-top:18px;
+    padding:15px;
+    border:none;
+    border-radius:14px;
+    background: linear-gradient(135deg, var(--gold), #FF9E4F);
+    color:#291800;
+    font-family:'Sarabun',sans-serif;
+    font-weight:700;
+    font-size:16px;
+    cursor:pointer;
+    box-shadow: 0 6px 18px rgba(255,200,87,0.28);
+  }
+  .cta:disabled{
+    opacity:0.4;
+    box-shadow:none;
+    cursor:not-allowed;
+  }
+  .cta.ghost{
+    background: transparent;
+    border: 1.5px solid var(--line);
+    color: var(--ink);
+    box-shadow:none;
+  }
+
+  .best-row{
+    display:flex;
+    justify-content:space-between;
+    background: rgba(255,255,255,0.04);
+    border-radius:12px;
+    padding:10px 14px;
+    font-size:13.5px;
+    color: var(--ink-dim);
+    margin-top:14px;
+  }
+  .best-row b{ color: var(--gold); }
+
+  /* ---------- Game: quiz ---------- */
+  .quiz-top{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:14px;
+  }
+  .progress-bar{
+    flex:1;
+    height:9px;
+    background: rgba(255,255,255,0.08);
+    border-radius:6px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background: linear-gradient(90deg, var(--teal), var(--violet));
+    width:0%;
+    transition: width .3s ease;
+  }
+  .streak{
+    font-size:13px;
+    font-weight:700;
+    color: var(--gold);
+    white-space:nowrap;
+  }
+  .q-topic-tag{
+    display:inline-block;
+    font-size:12px;
+    font-weight:700;
+    color: var(--navy-deep);
+    background: var(--gold);
+    padding:3px 10px;
+    border-radius:20px;
+    margin-bottom:10px;
+  }
+  .q-card{
+    background: var(--navy-card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:22px 18px;
+  }
+  .q-text{
+    font-size:17px;
+    font-weight:600;
+    line-height:1.55;
+    margin: 0 0 18px;
+  }
+  .options{ display:flex; flex-direction:column; gap:10px; }
+  .opt{
+    text-align:left;
+    padding:13px 14px;
+    border-radius:12px;
+    border:1.5px solid var(--line);
+    background: rgba(255,255,255,0.03);
+    color: var(--ink);
+    font-family:'Sarabun',sans-serif;
+    font-size:14.5px;
+    line-height:1.5;
+    cursor:pointer;
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+  }
+  .opt .letter{
+    flex-shrink:0;
+    width:24px; height:24px;
+    border-radius:7px;
+    background: rgba(255,255,255,0.08);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:13px;
+    color: var(--ink-dim);
+  }
+  .opt:active{ transform: scale(0.99); }
+  .opt.correct{
+    border-color: var(--teal);
+    background: rgba(63,214,197,0.18);
+  }
+  .opt.correct .letter{ background: var(--teal); color:#062821; }
+  .opt.wrong{
+    border-color: var(--coral);
+    background: rgba(255,111,111,0.16);
+  }
+  .opt.wrong .letter{ background: var(--coral); color:#3a0000; }
+  .opt.disabled{ cursor:default; }
+  .feedback{
+    margin-top:14px;
+    padding:12px 14px;
+    border-radius:12px;
+    font-size:13.5px;
+    line-height:1.55;
+    display:none;
+  }
+  .feedback.show{ display:block; }
+  .feedback.ok{ background: rgba(63,214,197,0.14); color: var(--teal); }
+  .feedback.no{ background: rgba(255,111,111,0.14); color: #FFB3B3; }
+  .next-btn{
+    width:100%;
+    margin-top:16px;
+    padding:14px;
+    border:none;
+    border-radius:12px;
+    background: linear-gradient(135deg, var(--violet), #5B4FD1);
+    color:#fff;
+    font-weight:700;
+    font-size:15px;
+    cursor:pointer;
+    display:none;
+  }
+  .next-btn.show{ display:block; }
+
+  /* ---------- Result ---------- */
+  .result-card{
+    text-align:center;
+    padding: 26px 18px 10px;
+  }
+  .result-emoji{ font-size:52px; margin-bottom:6px; }
+  .result-score{
+    font-family:'Chonburi', serif;
+    font-size:40px;
+    color: var(--gold);
+    margin: 4px 0 0;
+  }
+  .result-label{
+    color: var(--ink-dim);
+    font-size:14px;
+    margin-bottom:18px;
+  }
+  .result-verdict{
+    display:inline-block;
+    padding:7px 16px;
+    border-radius:20px;
+    font-weight:700;
+    font-size:13.5px;
+    margin-bottom:18px;
+  }
+  .verdict-pass{ background: rgba(63,214,197,0.18); color: var(--teal); }
+  .verdict-mid{ background: rgba(255,200,87,0.18); color: var(--gold); }
+  .verdict-low{ background: rgba(255,111,111,0.18); color: #FFB3B3; }
+
+  .review-item{
+    text-align:left;
+    background: rgba(255,255,255,0.03);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:12px 14px;
+    margin-bottom:9px;
+    font-size:13.5px;
+    line-height:1.6;
+  }
+  .review-item .q{ font-weight:700; margin-bottom:5px; }
+  .review-item .your{ color:#FFB3B3; }
+  .review-item .correct-ans{ color: var(--teal); }
+  .review-item .exp{ color: var(--ink-dim); margin-top:4px; }
+
+  footer{
+    text-align:center;
+    color: rgba(185,194,224,0.5);
+    font-size:12px;
+    margin-top:22px;
+  }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="wrap">
+
+  <header class="top">
+    <div class="eyebrow">วิทยาศาสตร์ ม.3</div>
+    <h1>ห้องเตรียมสอบ: อวกาศและแสง</h1>
+    <p>สรุปเนื้อหาให้อ่านเร็ว + เกมฝึกทำข้อสอบให้แม่นก่อนสอบจริง</p>
+  </header>
+
+  <nav class="tabs">
+    <button id="tabSummaryBtn" class="active">📘 สรุป</button>
+    <button id="tabGameBtn">🎮 เกม</button>
+  </nav>
+
+  <!-- ================= SUMMARY VIEW ================= -->
+  <section id="viewSummary" class="view active"></section>
+
+  <!-- ================= GAME VIEW ================= -->
+  <section id="viewGame" class="view">
+
+    <div id="gameSetup">
+      <div class="panel">
+        <h2>เลือกหัวข้อที่จะฝึก</h2>
+        <p class="sub">แตะเลือกได้หลายหัวข้อ ยิ่งเลือกครบยิ่งฝึกแบบรวมทุกเรื่อง</p>
+        <div class="chip-grid" id="chipGrid"></div>
+        <div class="chip-all" id="chipAllToggle">เลือกทั้งหมด / ยกเลิกทั้งหมด</div>
+      </div>
+
+      <div class="panel">
+        <h2>จำนวนข้อ</h2>
+        <p class="sub">เลือกความยาวของแบบฝึกหัด</p>
+        <div class="length-row" id="lengthRow"></div>
+        <div class="best-row">
+          <span>คะแนนสูงสุดที่เคยทำได้</span>
+          <b id="bestScoreLabel">ยังไม่มีข้อมูล</b>
+        </div>
+        <button class="cta" id="startBtn">🚀 เริ่มทำข้อสอบ</button>
+      </div>
+    </div>
+
+    <div id="gamePlay" style="display:none;">
+      <div class="quiz-top">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="streak" id="streakLabel">🔥 0</div>
+      </div>
+      <div class="q-card">
+        <span class="q-topic-tag" id="qTopicTag">หัวข้อ</span>
+        <p class="q-text" id="qText">คำถาม</p>
+        <div class="options" id="qOptions"></div>
+        <div class="feedback" id="qFeedback"></div>
+        <button class="next-btn" id="nextBtn">ข้อถัดไป →</button>
+      </div>
+    </div>
+
+    <div id="gameResult" style="display:none;">
+      <div class="panel result-card">
+        <div class="result-emoji" id="resultEmoji">🌟</div>
+        <div class="result-score"><span id="resultScore">0</span>/<span id="resultTotal">0</span></div>
+        <div class="result-label">ตอบถูก <span id="resultPercent">0</span>%</div>
+        <div class="result-verdict" id="resultVerdict">ผลลัพธ์</div>
+      </div>
+      <div class="panel" id="reviewPanel" style="display:none;">
+        <h2>ทบทวนข้อที่พลาด</h2>
+        <div id="reviewList"></div>
+      </div>
+      <button class="cta" id="retryBtn">🔁 ทำแบบทดสอบใหม่</button>
+      <button class="cta ghost" id="backBtn">← กลับไปเลือกหัวข้อ</button>
+    </div>
+
+  </section>
+
+  <footer>เตรียมตัวให้พร้อม แล้วไปลุยข้อสอบกันเถอะ ✨</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ================= DATA ================= */
+  var TOPICS = [
+    {id:"solar", name:"ระบบสุริยะ", em:"🪐"},
+    {id:"daynight", name:"กลางวัน-กลางคืน", em:"🌗"},
+    {id:"season", name:"ฤดูกาล", em:"🍂"},
+    {id:"tide", name:"น้ำขึ้นน้ำลง", em:"🌊"},
+    {id:"space", name:"เทคโนโลยีอวกาศ", em:"🚀"},
+    {id:"em", name:"คลื่นแม่เหล็กไฟฟ้า", em:"📡"},
+    {id:"light", name:"การสะท้อน/หักเหแสง", em:"🌈"},
+    {id:"mirror", name:"กระจกและเลนส์", em:"🔍"}
+  ];
+
+  var SUMMARY = {
+    solar: {
+      icon:"🪐",
+      html:"<ul>"+
+        "<li><span class='tag'>ศูนย์กลาง</span> <b>ดวงอาทิตย์</b> เป็นศูนย์กลางของระบบสุริยะ วัตถุต่าง ๆ โคจรรอบด้วย <b>แรงโน้มถ่วง</b></li>"+
+        "<li>สมาชิก: ดาวเคราะห์ 8 ดวง, ดาวเคราะห์แคระ (เช่น พลูโต), ดาวเคราะห์น้อย, ดาวหาง</li>"+
+        "<li><b>เรียงดาวเคราะห์จากใกล้→ไกลดวงอาทิตย์:</b> พุธ → ศุกร์ → โลก → อังคาร → พฤหัสบดี → เสาร์ → ยูเรนัส → เนปจูน</li>"+
+        "<li><b>ดาวเคราะห์ชั้นใน</b> (พุธ ศุกร์ โลก อังคาร): ขนาดเล็กกว่า พื้นผิวเป็นหิน อยู่ใกล้ดวงอาทิตย์</li>"+
+        "<li><b>ดาวเคราะห์ชั้นนอก</b> (พฤหัสบดี เสาร์ ยูเรนัส เนปจูน): ขนาดใหญ่ ประกอบด้วยก๊าซ/น้ำแข็งเป็นส่วนใหญ่ อยู่ไกลดวงอาทิตย์</li>"+
+        "<li>พลูโตเป็น <b>ดาวเคราะห์แคระ</b> อยู่ในแถบไคเปอร์ (Kuiper Belt) ไม่ใช่ดาวเคราะห์ดวงที่ 9</li>"+
+        "</ul>"
+    },
+    daynight: {
+      icon:"🌗",
+      html:"<ul>"+
+        "<li>เกิดจาก <b>โลกหมุนรอบตัวเอง</b> โดยหมุนจาก <b>ทิศตะวันตก → ทิศตะวันออก</b></li>"+
+        "<li>ใช้เวลาประมาณ <b>24 ชั่วโมง</b> ต่อการหมุนครบ 1 รอบ</li>"+
+        "<li>ด้านที่หันเข้าหาดวงอาทิตย์ = <b>กลางวัน</b> ด้านที่หันออก = <b>กลางคืน</b></li>"+
+        "<li>ผลจากการหมุนของโลก ทำให้เราเห็นดวงอาทิตย์ <b>ขึ้นทางทิศตะวันออก และตกทางทิศตะวันตก</b></li>"+
+        "</ul>"
+    },
+    season: {
+      icon:"🍂",
+      html:"<ul>"+
+        "<li>ฤดูกาลเกิดจาก <b>แกนโลกเอียง (~23.5°)</b> ร่วมกับ <b>โลกโคจรรอบดวงอาทิตย์</b></li>"+
+        "<li>โลกโคจรรอบดวงอาทิตย์ 1 รอบใช้เวลาประมาณ <b>365.25 วัน</b></li>"+
+        "<li>ซีกโลกที่ <b>เอียงเข้าหา</b>ดวงอาทิตย์ → ได้รับแสงตรง ช่วงกลางวันยาว → <b>ฤดูร้อน</b></li>"+
+        "<li>ซีกโลกที่ <b>เอียงออกจาก</b>ดวงอาทิตย์ → ได้รับแสงเฉียง ช่วงกลางวันสั้น → <b>ฤดูหนาว</b></li>"+
+        "<li><b>ข้อควรจำ:</b> ฤดูกาล<u>ไม่ได้</u>เกิดจากโลกอยู่ใกล้หรือไกลดวงอาทิตย์เป็นหลัก</li>"+
+        "<li>สูตรจำ: <b>ฤดูกาล = แกนโลกเอียง + โลกโคจรรอบดวงอาทิตย์</b></li>"+
+        "</ul>"
+    },
+    tide: {
+      icon:"🌊",
+      html:"<ul>"+
+        "<li>เกิดจาก <b>แรงโน้มถ่วงของดวงจันทร์เป็นหลัก</b> ร่วมกับแรงโน้มถ่วงของดวงอาทิตย์</li>"+
+        "<li><b>น้ำเกิด (Spring tide):</b> เกิดช่วง <b>เดือนดับ</b> และ <b>วันเพ็ญ</b> เมื่อดวงอาทิตย์ โลก ดวงจันทร์เกือบอยู่แนวเดียวกัน → ส่วนต่างระดับน้ำขึ้น-ลง<b>มาก</b></li>"+
+        "<li><b>น้ำตาย (Neap tide):</b> เกิดช่วง <b>ขึ้น 8 ค่ำ</b> และ <b>แรม 8 ค่ำ</b> เมื่อดวงอาทิตย์-ดวงจันทร์ทำมุมใกล้เคียง <b>90°</b> → ส่วนต่างระดับน้ำ<b>น้อย</b></li>"+
+        "<li>จำ: เดือนดับ + วันเพ็ญ = น้ำเกิด | ขึ้น 8 ค่ำ + แรม 8 ค่ำ = น้ำตาย</li>"+
+        "</ul>"
+    },
+    space: {
+      icon:"🚀",
+      html:"<ul>"+
+        "<li><b>จรวด</b>: ส่งยาน ดาวเทียม หรืออุปกรณ์ขึ้นสู่อวกาศ</li>"+
+        "<li><b>ดาวเทียม</b>: สื่อสาร พยากรณ์อากาศ สำรวจทรัพยากร นำทาง (GPS)</li>"+
+        "<li><b>กล้องโทรทรรศน์อวกาศ</b>: ศึกษาดาวฤกษ์ กาแล็กซี และวัตถุท้องฟ้า</li>"+
+        "<li><b>ยานอวกาศ</b>: สำรวจดวงจันทร์ ดาวเคราะห์ และอวกาศ</li>"+
+        "<li><b>ชุดอวกาศ</b>: ปกป้องและช่วยให้นักบินอวกาศดำรงชีวิตนอกยานได้</li>"+
+        "<li><b>สถานีอวกาศ</b>: เป็นที่อยู่อาศัยและห้องทดลองในอวกาศ</li>"+
+        "<li><b>บุคคล/เหตุการณ์สำคัญ:</b> Sputnik 1 (ดาวเทียมดวงแรกของโลก) · Laika (สัตว์ตัวแรกที่โคจรรอบโลก) · Yuri Gagarin (มนุษย์คนแรกในอวกาศ) · Neil Armstrong (มนุษย์คนแรกเหยียบดวงจันทร์) · Apollo 11 (ภารกิจนำมนุษย์ลงจอดดวงจันทร์ครั้งแรก)</li>"+
+        "</ul>"
+    },
+    em: {
+      icon:"📡",
+      html:"<ul>"+
+        "<li>คลื่นแม่เหล็กไฟฟ้าเกิดจาก <b>การสั่นของสนามไฟฟ้าและสนามแม่เหล็กที่ตั้งฉากกัน</b> เดินทางในสุญญากาศได้โดยไม่ต้องอาศัยตัวกลาง ด้วยความเร็ว <b>3.0×10⁸ m/s</b> (เท่ากับความเร็วแสง)</li>"+
+        "<li>ความสัมพันธ์: <b>c = fλ</b> (ความยาวคลื่นกับความถี่แปรผกผันกัน)</li>"+
+        "<li><b>เรียงจากความยาวคลื่นมาก → น้อย (ความถี่น้อย → มาก):</b> วิทยุ → ไมโครเวฟ → อินฟราเรด → แสงที่มองเห็น → อัลตราไวโอเลต (UV) → รังสีเอกซ์ → รังสีแกมมา</li>"+
+        "<li>ตัวอย่างการใช้งาน: วิทยุ (กระจายเสียง) · ไมโครเวฟ (เตาไมโครเวฟ, Wi-Fi) · อินฟราเรด (รีโมท, กล้องความร้อน) · UV (ฆ่าเชื้อโรค, ตรวจธนบัตร) · X-ray (ถ่ายภาพกระดูก) · แกมมา (รักษามะเร็ง)</li>"+
+        "<li>แสงสีแดงมีความยาวคลื่นมากกว่าและความถี่ต่ำกว่าสีม่วง (แดง ส้ม เหลือง เขียว น้ำเงิน คราม ม่วง)</li>"+
+        "</ul>"
+    },
+    light: {
+      icon:"🌈",
+      html:"<ul>"+
+        "<li><b>การสะท้อนของแสง:</b> มุมตกกระทบ (i) เท่ากับมุมสะท้อน (r) เสมอ → <b>i = r</b></li>"+
+        "<li><b>การหักเหของแสง:</b> เกิดเมื่อแสงเดินทางผ่านตัวกลางที่มีความหนาแน่นต่างกัน ทำให้ความเร็วและทิศทางเปลี่ยน</li>"+
+        "<li>เข้าสู่ตัวกลางหนาแน่น<b>มากขึ้น</b> → แสงเบน<b>เข้า</b>เส้นแนวตั้งฉาก (i > r)</li>"+
+        "<li>เข้าสู่ตัวกลางหนาแน่น<b>น้อยลง</b> → แสงเบน<b>ออก</b>จากเส้นแนวตั้งฉาก (i < r)</li>"+
+        "<li><b>มิราจ (Mirage):</b> ภาพลวงตาจากการหักเหของแสงในชั้นอากาศที่อุณหภูมิต่างกัน</li>"+
+        "<li><b>รุ้งกินน้ำ:</b> เกิดจากการหักเหและสะท้อนของแสงภายในหยดน้ำ ทำให้แสงขาวแยกเป็นสีต่าง ๆ</li>"+
+        "</ul>"
+    },
+    mirror: {
+      icon:"🔍",
+      html:"<ul>"+
+        "<li><b>กระจกเงาราบ:</b> สะท้อนแสงเรียบ ให้ภาพเสมือน หัวตั้ง ขนาดเท่าวัตถุ ระยะวัตถุ = ระยะภาพ</li>"+
+        "<li><b>กระจกเว้า (รวมแสง):</b> วัตถุอยู่นอกโฟกัส F → ภาพจริงหัวกลับ | วัตถุอยู่ระหว่าง F กับกระจก → ภาพเสมือนหัวตั้งขยายใหญ่ (ใช้ทำกระจกแต่งหน้า)</li>"+
+        "<li><b>กระจกนูน (กระจายแสง):</b> ให้ภาพเสมือน หัวตั้ง เล็กกว่าวัตถุเสมอ มองเห็นบริเวณกว้าง (กระจกมองข้างรถ)</li>"+
+        "<li><b>เลนส์นูน (รวมแสง):</b> หนาตรงกลาง บางที่ขอบ ให้ภาพคล้ายกระจกเว้า (แว่นขยาย กล้องถ่ายรูป)</li>"+
+        "<li><b>เลนส์เว้า (กระจายแสง):</b> บางตรงกลาง หนาที่ขอบ ให้ภาพเสมือนหัวตั้งเล็กกว่าวัตถุเสมอ (แว่นสายตาสั้น)</li>"+
+        "<li><b>ภาพจริง</b> รับบนฉากได้ หัวกลับ | <b>ภาพเสมือน</b> รับบนฉากไม่ได้ หัวตั้งเสมอ</li>"+
+        "</ul>"
+    }
+  };
+
+  var QUESTIONS = [
+    // ---- solar ----
+    {topic:"solar", q:"ระบบสุริยะมีอะไรเป็นศูนย์กลาง?", opts:["ดวงอาทิตย์","โลก","ดวงจันทร์","ดาวพฤหัสบดี"], a:0, exp:"ดวงอาทิตย์เป็นศูนย์กลางของระบบสุริยะ วัตถุต่าง ๆ โคจรรอบด้วยแรงโน้มถ่วง"},
+    {topic:"solar", q:"เรียงดาวเคราะห์จากใกล้ดวงอาทิตย์ไปไกลที่สุด ข้อใดถูกต้อง?", opts:["พุธ ศุกร์ โลก อังคาร พฤหัสบดี เสาร์ ยูเรนัส เนปจูน","ศุกร์ พุธ โลก อังคาร เสาร์ พฤหัสบดี เนปจูน ยูเรนัส","โลก พุธ ศุกร์ อังคาร พฤหัสบดี เสาร์ ยูเรนัส เนปจูน","พุธ ศุกร์ อังคาร โลก พฤหัสบดี เสาร์ เนปจูน ยูเรนัส"], a:0, exp:"ลำดับที่ถูกต้อง: พุธ → ศุกร์ → โลก → อังคาร → พฤหัสบดี → เสาร์ → ยูเรนัส → เนปจูน"},
+    {topic:"solar", q:"ดาวเคราะห์ชั้นในได้แก่กลุ่มใด?", opts:["พุธ ศุกร์ โลก อังคาร","พฤหัสบดี เสาร์ ยูเรนัส เนปจูน","ศุกร์ โลก พฤหัสบดี เสาร์","พุธ อังคาร ยูเรนัส เนปจูน"], a:0, exp:"ดาวเคราะห์ชั้นใน (พุธ ศุกร์ โลก อังคาร) ส่วนใหญ่มีพื้นผิวเป็นหิน และมีขนาดเล็กกว่าดาวเคราะห์ชั้นนอก"},
+    {topic:"solar", q:"ดาวเคราะห์ชั้นนอกมีองค์ประกอบส่วนใหญ่เป็นอะไร?", opts:["ก๊าซและน้ำแข็ง","หินและโลหะ","น้ำเหลวทั้งดวง","ทรายและฝุ่น"], a:0, exp:"ดาวเคราะห์ชั้นนอก (พฤหัสบดี เสาร์ ยูเรนัส เนปจูน) มีขนาดใหญ่และประกอบด้วยก๊าซ/น้ำแข็งเป็นสัดส่วนมาก"},
+    {topic:"solar", q:"พลูโต (Pluto) ถูกจัดอยู่ในกลุ่มใด?", opts:["ดาวเคราะห์แคระในแถบไคเปอร์","ดาวเคราะห์ดวงที่ 9","ดาวหาง","ดวงจันทร์บริวารของเนปจูน"], a:0, exp:"พลูโตเป็นดาวเคราะห์แคระ อยู่ในแถบไคเปอร์ (Kuiper Belt) ไม่ถูกนับเป็นดาวเคราะห์ดวงที่ 9 อีกต่อไป"},
+    {topic:"solar", q:"ดาวเคราะห์ดวงใดอยู่ใกล้ดวงอาทิตย์มากที่สุด?", opts:["พุธ","ศุกร์","โลก","อังคาร"], a:0, exp:"พุธเป็นดาวเคราะห์ที่อยู่ใกล้ดวงอาทิตย์มากที่สุดในระบบสุริยะ"},
+
+    // ---- daynight ----
+    {topic:"daynight", q:"การเกิดกลางวัน-กลางคืนเกิดจากอะไร?", opts:["โลกหมุนรอบตัวเอง","โลกโคจรรอบดวงอาทิตย์","ดวงจันทร์โคจรรอบโลก","แกนโลกเอียง"], a:0, exp:"กลางวัน-กลางคืนเกิดจากโลกหมุนรอบตัวเอง ไม่ใช่การโคจรรอบดวงอาทิตย์"},
+    {topic:"daynight", q:"โลกหมุนรอบตัวเองจากทิศใดไปทิศใด?", opts:["ตะวันตกไปตะวันออก","ตะวันออกไปตะวันตก","เหนือไปใต้","ใต้ไปเหนือ"], a:0, exp:"โลกหมุนจากทิศตะวันตกไปทิศตะวันออก ทำให้เราเห็นดวงอาทิตย์ขึ้นทางทิศตะวันออก"},
+    {topic:"daynight", q:"โลกหมุนรอบตัวเองครบ 1 รอบใช้เวลาประมาณเท่าไร?", opts:["24 ชั่วโมง","365 วัน","1 เดือน","12 ชั่วโมง"], a:0, exp:"โลกหมุนรอบตัวเองครบ 1 รอบใช้เวลาประมาณ 24 ชั่วโมง"},
+    {topic:"daynight", q:"ดวงอาทิตย์ปรากฏขึ้น (ขึ้น) ทางทิศใด?", opts:["ตะวันออก","ตะวันตก","เหนือ","ใต้"], a:0, exp:"ผลจากการหมุนของโลก ทำให้เราเห็นดวงอาทิตย์ขึ้นทางทิศตะวันออกและตกทางทิศตะวันตก"},
+    {topic:"daynight", q:"ด้านของโลกที่หันเข้าหาดวงอาทิตย์คือช่วงเวลาใด?", opts:["กลางวัน","กลางคืน","ไม่มีแสงเลย","ทั้งกลางวันและกลางคืน"], a:0, exp:"ด้านที่หันเข้าหาดวงอาทิตย์จะเป็นกลางวัน ส่วนด้านที่หันออกจะเป็นกลางคืน"},
+    {topic:"daynight", q:"ดวงอาทิตย์ตกทางทิศใด?", opts:["ตะวันตก","ตะวันออก","เหนือ","ใต้"], a:0, exp:"ดวงอาทิตย์ตกทางทิศตะวันตกเสมอ เนื่องจากทิศทางการหมุนของโลก"},
+
+    // ---- season ----
+    {topic:"season", q:"ฤดูกาลเกิดจากปัจจัยหลักใด?", opts:["แกนโลกเอียง ร่วมกับโลกโคจรรอบดวงอาทิตย์","โลกอยู่ใกล้-ไกลดวงอาทิตย์","โลกหมุนรอบตัวเอง","ดวงจันทร์โคจรรอบโลก"], a:0, exp:"ฤดูกาลเกิดจากแกนโลกที่เอียงประมาณ 23.5° ร่วมกับการที่โลกโคจรรอบดวงอาทิตย์"},
+    {topic:"season", q:"แกนโลกเอียงทำมุมประมาณกี่องศา?", opts:["23.5°","45°","90°","66.5°"], a:0, exp:"แกนโลกเอียงประมาณ 23.5° ซึ่งเป็นสาเหตุสำคัญของการเกิดฤดูกาล"},
+    {topic:"season", q:"โลกโคจรรอบดวงอาทิตย์ครบ 1 รอบใช้เวลาประมาณกี่วัน?", opts:["365.25 วัน","30 วัน","24 ชั่วโมง","27 วัน"], a:0, exp:"โลกใช้เวลาประมาณ 365.25 วัน ในการโคจรรอบดวงอาทิตย์ 1 รอบ"},
+    {topic:"season", q:"ซีกโลกที่เอียงเข้าหาดวงอาทิตย์จะเป็นฤดูใด?", opts:["ฤดูร้อน","ฤดูหนาว","ฤดูฝนเสมอ","ไม่มีผลต่อฤดูกาล"], a:0, exp:"ซีกโลกที่เอียงเข้าหาดวงอาทิตย์จะได้รับแสงค่อนข้างตรงและมีช่วงกลางวันยาวกว่า จึงเป็นฤดูร้อน"},
+    {topic:"season", q:"ข้อใดถูกต้องเกี่ยวกับการเกิดฤดูกาล?", opts:["ไม่ได้เกิดจากโลกอยู่ใกล้หรือไกลดวงอาทิตย์เป็นหลัก","เกิดจากโลกเข้าใกล้ดวงอาทิตย์มากขึ้นในฤดูร้อน","เกิดจากดวงจันทร์บังแสงอาทิตย์","เกิดจากการหมุนของดวงอาทิตย์รอบโลก"], a:0, exp:"ฤดูกาลไม่ได้เกิดจากระยะห่างจากดวงอาทิตย์เป็นหลัก แต่เกิดจากแกนโลกเอียงร่วมกับการโคจรรอบดวงอาทิตย์"},
+    {topic:"season", q:"ซีกโลกที่เอียงออกจากดวงอาทิตย์ ช่วงกลางวันจะเป็นอย่างไร?", opts:["สั้นกว่า","ยาวกว่า","เท่ากันตลอดปี","ไม่มีกลางวันเลย"], a:0, exp:"ซีกโลกที่เอียงออกจากดวงอาทิตย์จะได้รับแสงเฉียงและมีช่วงกลางวันสั้นกว่า จึงเป็นฤดูหนาว"},
+
+    // ---- tide ----
+    {topic:"tide", q:"น้ำขึ้นน้ำลงเกิดจากแรงใดเป็นหลัก?", opts:["แรงโน้มถ่วงของดวงจันทร์","แรงโน้มถ่วงของดวงอาทิตย์เพียงอย่างเดียว","ลมทะเล","การหมุนของโลกเพียงอย่างเดียว"], a:0, exp:"น้ำขึ้นน้ำลงเกิดจากแรงโน้มถ่วงของดวงจันทร์เป็นหลัก ร่วมกับแรงโน้มถ่วงของดวงอาทิตย์"},
+    {topic:"tide", q:"น้ำเกิด (Spring tide) เกิดขึ้นในช่วงใด?", opts:["เดือนดับและวันเพ็ญ","ขึ้น 8 ค่ำและแรม 8 ค่ำ","ทุกวันเท่ากัน","เฉพาะฤดูร้อนเท่านั้น"], a:0, exp:"น้ำเกิดเกิดในช่วงเดือนดับและวันเพ็ญ เมื่อดวงอาทิตย์ โลก และดวงจันทร์เกือบอยู่ในแนวเดียวกัน"},
+    {topic:"tide", q:"น้ำตาย (Neap tide) เกิดขึ้นเมื่อดวงอาทิตย์กับดวงจันทร์ทำมุมกับโลกประมาณเท่าไร?", opts:["90°","0°","180°","45°"], a:0, exp:"น้ำตายเกิดเมื่อดวงอาทิตย์กับดวงจันทร์ทำมุมใกล้เคียง 90° กับโลก ในช่วงขึ้น 8 ค่ำและแรม 8 ค่ำ"},
+    {topic:"tide", q:"ในช่วงน้ำเกิด ส่วนต่างของระดับน้ำขึ้น-ลงเป็นอย่างไร?", opts:["มาก","น้อย","ไม่เปลี่ยนแปลงเลย","เท่ากับช่วงน้ำตายเสมอ"], a:0, exp:"ช่วงน้ำเกิดระดับน้ำขึ้นสูงสุดและลงต่ำสุด ทำให้ส่วนต่างของระดับน้ำมาก"},
+    {topic:"tide", q:"น้ำเกิดเกิดขึ้นเมื่อดวงอาทิตย์ โลก และดวงจันทร์อยู่ในลักษณะใด?", opts:["เกือบอยู่ในแนวเดียวกัน","ตั้งฉากกัน","ทำมุม 45° ต่อกัน","อยู่ห่างกันมากที่สุด"], a:0, exp:"น้ำเกิดเกิดเมื่อดวงอาทิตย์ โลก และดวงจันทร์เกือบอยู่ในแนวเดียวกัน (ช่วงเดือนดับ/วันเพ็ญ)"},
+    {topic:"tide", q:"น้ำตายเกิดขึ้นในช่วงข้างขึ้นข้างแรมใด?", opts:["ขึ้น 8 ค่ำ และ แรม 8 ค่ำ","ขึ้น 15 ค่ำ","แรม 15 ค่ำ","ขึ้น 1 ค่ำ"], a:0, exp:"น้ำตายเกิดในช่วงขึ้น 8 ค่ำ และแรม 8 ค่ำ ซึ่งเป็นช่วงที่ดวงอาทิตย์และดวงจันทร์ทำมุมใกล้เคียง 90°"},
+
+    // ---- space ----
+    {topic:"space", q:"อุปกรณ์ใดทำหน้าที่ส่งยานหรือดาวเทียมขึ้นสู่อวกาศ?", opts:["จรวด","ดาวเทียม","กล้องโทรทรรศน์อวกาศ","สถานีอวกาศ"], a:0, exp:"จรวดทำหน้าที่ส่งยาน ดาวเทียม หรืออุปกรณ์ต่าง ๆ ขึ้นสู่อวกาศ"},
+    {topic:"space", q:"ดาวเทียมประดิษฐ์ดวงแรกของโลกชื่ออะไร?", opts:["Sputnik 1","Apollo 11","Laika","Voyager 1"], a:0, exp:"Sputnik 1 คือดาวเทียมประดิษฐ์ดวงแรกของโลก (พ.ศ. 2500)"},
+    {topic:"space", q:"ใครคือมนุษย์คนแรกที่เดินทางสู่อวกาศและโคจรรอบโลก?", opts:["Yuri Gagarin","Neil Armstrong","Laika","Buzz Aldrin"], a:0, exp:"Yuri Gagarin เป็นมนุษย์คนแรกที่เดินทางสู่อวกาศและโคจรรอบโลก (พ.ศ. 2504)"},
+    {topic:"space", q:"ใครคือมนุษย์คนแรกที่เหยียบพื้นผิวดวงจันทร์?", opts:["Neil Armstrong","Yuri Gagarin","Laika","สุนัข Laika"], a:0, exp:"Neil Armstrong เป็นมนุษย์คนแรกที่เหยียบดวงจันทร์ในภารกิจ Apollo 11 (พ.ศ. 2512)"},
+    {topic:"space", q:"ภารกิจ Apollo 11 มีความสำคัญอย่างไร?", opts:["นำมนุษย์ลงจอดบนดวงจันทร์เป็นครั้งแรก","ส่งดาวเทียมดวงแรกขึ้นสู่อวกาศ","เป็นภารกิจส่งสัตว์ตัวแรกไปอวกาศ","เป็นภารกิจสำรวจดาวอังคารครั้งแรก"], a:0, exp:"Apollo 11 คือภารกิจที่นำมนุษย์ลงจอดบนดวงจันทร์เป็นครั้งแรก โดยมี Neil Armstrong ร่วมเดินทาง"},
+    {topic:"space", q:"อุปกรณ์ใดใช้ศึกษาดาวฤกษ์ กาแล็กซี และวัตถุท้องฟ้าที่อยู่ไกล?", opts:["กล้องโทรทรรศน์อวกาศ","ชุดอวกาศ","จรวด","ยานอวกาศ"], a:0, exp:"กล้องโทรทรรศน์อวกาศใช้ศึกษาดาวฤกษ์ กาแล็กซี และวัตถุท้องฟ้าต่าง ๆ"},
+
+    // ---- em ----
+    {topic:"em", q:"คลื่นแม่เหล็กไฟฟ้าเกิดจากอะไร?", opts:["การสั่นของสนามไฟฟ้าและสนามแม่เหล็กที่ตั้งฉากกัน","การสั่นของอนุภาคอากาศ","การไหลของกระแสน้ำ","การสั่นสะเทือนของเสียง"], a:0, exp:"คลื่นแม่เหล็กไฟฟ้าเกิดจากการสั่นของสนามไฟฟ้าและสนามแม่เหล็กที่ตั้งฉากกัน เดินทางในสุญญากาศได้"},
+    {topic:"em", q:"คลื่นแม่เหล็กไฟฟ้าทุกชนิดเดินทางด้วยความเร็วเท่าใดในสุญญากาศ?", opts:["3.0×10⁸ เมตร/วินาที (เท่าความเร็วแสง)","3.0×10⁵ เมตร/วินาที","แตกต่างกันไปตามชนิดของคลื่น","1.0×10⁸ เมตร/วินาที"], a:0, exp:"คลื่นแม่เหล็กไฟฟ้าทุกชนิดเดินทางด้วยความเร็วเท่ากับความเร็วแสง คือ 3.0×10⁸ เมตร/วินาที ในสุญญากาศ"},
+    {topic:"em", q:"เรียงคลื่นแม่เหล็กไฟฟ้าจากความยาวคลื่นมาก → น้อย ข้อใดถูกต้อง?", opts:["วิทยุ ไมโครเวฟ อินฟราเรด แสงที่มองเห็น อัลตราไวโอเลต รังสีเอกซ์ แกมมา","แกมมา รังสีเอกซ์ อัลตราไวโอเลต แสงที่มองเห็น อินฟราเรด ไมโครเวฟ วิทยุ","แสงที่มองเห็น วิทยุ อินฟราเรด แกมมา อัลตราไวโอเลต ไมโครเวฟ รังสีเอกซ์","อินฟราเรด วิทยุ ไมโครเวฟ แกมมา รังสีเอกซ์ อัลตราไวโอเลต แสงที่มองเห็น"], a:0, exp:"ลำดับความยาวคลื่นมาก→น้อย: วิทยุ → ไมโครเวฟ → อินฟราเรด → แสงที่มองเห็น → อัลตราไวโอเลต → รังสีเอกซ์ → แกมมา"},
+    {topic:"em", q:"คลื่นชนิดใดมีความถี่สูงที่สุดและมีพลังงานมากที่สุด?", opts:["รังสีแกมมา","คลื่นวิทยุ","อินฟราเรด","ไมโครเวฟ"], a:0, exp:"รังสีแกมมามีความถี่สูงที่สุดและมีพลังงานมากที่สุดในสเปกตรัมคลื่นแม่เหล็กไฟฟ้า"},
+    {topic:"em", q:"รีโมทควบคุมเครื่องใช้ไฟฟ้าใช้คลื่นชนิดใด?", opts:["อินฟราเรด","รังสีเอกซ์","อัลตราไวโอเลต","คลื่นวิทยุ"], a:0, exp:"รีโมทคอนโทรลใช้คลื่นอินฟราเรดในการส่งสัญญาณควบคุม"},
+    {topic:"em", q:"ความยาวคลื่นกับความถี่ของคลื่นแม่เหล็กไฟฟ้ามีความสัมพันธ์กันอย่างไร?", opts:["แปรผกผันกัน (ความยาวคลื่นมาก → ความถี่น้อย)","แปรผันตรงกัน (ความยาวคลื่นมาก → ความถี่มาก)","ไม่มีความสัมพันธ์กัน","เท่ากันเสมอทุกกรณี"], a:0, exp:"ความยาวคลื่นกับความถี่แปรผกผันกัน: ความยาวคลื่นมาก ความถี่จะน้อย และในทางกลับกัน"},
+
+    // ---- light ----
+    {topic:"light", q:"กฎการสะท้อนของแสงกล่าวว่าอย่างไร?", opts:["มุมตกกระทบเท่ากับมุมสะท้อน (i = r)","มุมตกกระทบมากกว่ามุมสะท้อนเสมอ","แสงสะท้อนกลับทิศตรงข้ามเสมอ ไม่ว่ามุมใด","มุมตกกระทบไม่มีผลต่อมุมสะท้อน"], a:0, exp:"กฎการสะท้อนของแสงระบุว่ามุมตกกระทบเท่ากับมุมสะท้อนเสมอ (i = r)"},
+    {topic:"light", q:"การหักเหของแสงเกิดขึ้นเมื่อใด?", opts:["แสงเดินทางผ่านตัวกลางที่มีความหนาแน่นต่างกัน","แสงกระทบผิวเรียบแล้วสะท้อนกลับ","แสงเดินทางในสุญญากาศเท่านั้น","แสงหยุดเดินทางกะทันหัน"], a:0, exp:"การหักเหของแสงเกิดเมื่อแสงเดินทางจากตัวกลางหนึ่งไปยังอีกตัวกลางหนึ่งที่มีความหนาแน่นต่างกัน"},
+    {topic:"light", q:"เมื่อแสงเดินทางจากอากาศเข้าสู่น้ำ (ตัวกลางหนาแน่นมากขึ้น) แสงจะเบนอย่างไร?", opts:["เบนเข้าหาเส้นแนวตั้งฉาก","เบนออกจากเส้นแนวตั้งฉาก","ไม่เบนเลย เดินทางเป็นเส้นตรง","สะท้อนกลับหมดทันที"], a:0, exp:"เมื่อแสงเข้าสู่ตัวกลางที่หนาแน่นมากขึ้น แสงจะเบนเข้าหาเส้นแนวตั้งฉาก (i > r)"},
+    {topic:"light", q:"มิราจ (Mirage) เกิดจากอะไร?", opts:["การหักเหของแสงในชั้นอากาศที่มีอุณหภูมิต่างกัน","การสะท้อนของแสงในกระจกเงาราบ","การรวมแสงของเลนส์นูน","การกระเจิงของแสงจากฝุ่นในอากาศ"], a:0, exp:"มิราจเกิดจากการหักเหของแสงในชั้นอากาศที่มีความหนาแน่น (อุณหภูมิ) ต่างกัน ทำให้เห็นภาพลวงตาคล้ายน้ำบนพื้นถนน"},
+    {topic:"light", q:"รุ้งกินน้ำเกิดจากกระบวนการใดของแสงในหยดน้ำ?", opts:["การหักเหและการสะท้อนภายในหยดน้ำ","การดูดกลืนแสงทั้งหมดของหยดน้ำ","การเลี้ยวเบนของคลื่นเสียง","การสะท้อนบนกระจกเงาราบ"], a:0, exp:"รุ้งกินน้ำเกิดจากการหักเหและการสะท้อนภายในหยดน้ำ ทำให้แสงขาวแยกออกเป็นสีต่าง ๆ"},
+    {topic:"light", q:"สีใดของแสงที่มองเห็นมีความยาวคลื่นมากที่สุด?", opts:["สีแดง","สีม่วง","สีเขียว","สีน้ำเงิน"], a:0, exp:"สีแดงมีความยาวคลื่นมากที่สุดและความถี่ต่ำที่สุดในสเปกตรัมแสงที่มองเห็น ส่วนสีม่วงมีความยาวคลื่นน้อยที่สุด"},
+
+    // ---- mirror ----
+    {topic:"mirror", q:"กระจกเงาราบให้ภาพลักษณะใด?", opts:["ภาพเสมือน หัวตั้ง ขนาดเท่าวัตถุ","ภาพจริง หัวกลับ ขนาดเท่าวัตถุ","ภาพเสมือน ขยายใหญ่กว่าวัตถุเสมอ","ภาพจริง ขนาดเล็กกว่าวัตถุเสมอ"], a:0, exp:"กระจกเงาราบให้ภาพเสมือน หัวตั้ง ขนาดเท่ากับวัตถุ และระยะวัตถุเท่ากับระยะภาพ"},
+    {topic:"mirror", q:"กระจกเว้าเป็นกระจกประเภทใด?", opts:["กระจกรวมแสง","กระจกกระจายแสง","กระจกที่ไม่สะท้อนแสงเลย","กระจกที่ดูดกลืนแสงทั้งหมด"], a:0, exp:"กระจกเว้าเป็นกระจกรวมแสง ทำให้รังสีสะท้อนมีแนวโน้มมารวมกันที่จุดโฟกัส (F)"},
+    {topic:"mirror", q:"กระจกนูนให้ภาพลักษณะใดเสมอ ไม่ว่าวัตถุจะอยู่ตำแหน่งใด?", opts:["ภาพเสมือน หัวตั้ง เล็กกว่าวัตถุ","ภาพจริง หัวกลับ ขยายใหญ่กว่าวัตถุ","ภาพเสมือน ขยายใหญ่กว่าวัตถุ","ภาพจริงเสมอ ไม่ว่าตำแหน่งใด"], a:0, exp:"กระจกนูนเป็นกระจกกระจายแสง ให้ภาพเสมือน หัวตั้ง และเล็กกว่าวัตถุเสมอ จึงมองเห็นบริเวณกว้าง"},
+    {topic:"mirror", q:"เลนส์นูนเป็นเลนส์ประเภทใด?", opts:["เลนส์รวมแสง หนาตรงกลาง บางที่ขอบ","เลนส์กระจายแสง บางตรงกลาง หนาที่ขอบ","เลนส์ที่ไม่มีผลต่อทิศทางแสง","เลนส์กระจายแสงเสมอไม่ว่ารูปร่างใด"], a:0, exp:"เลนส์นูนเป็นเลนส์รวมแสง มีลักษณะหนาตรงกลาง บางที่ขอบ ทำให้รังสีหักเหมารวมกันที่จุดโฟกัส"},
+    {topic:"mirror", q:"เมื่อวัตถุอยู่ระหว่างจุดโฟกัส (F) กับเลนส์นูนหรือกระจกเว้า จะได้ภาพลักษณะใด?", opts:["ภาพเสมือน หัวตั้ง ขยายใหญ่","ภาพจริง หัวกลับ","ภาพเสมือน เล็กกว่าวัตถุ","ไม่เกิดภาพเลย"], a:0, exp:"เมื่อวัตถุอยู่ระหว่าง F กับเลนส์นูน (หรือกระจกเว้า) จะได้ภาพเสมือน หัวตั้ง และขยายใหญ่กว่าวัตถุ"},
+    {topic:"mirror", q:"กระจกนูนมักถูกนำไปใช้ทำอุปกรณ์ใดเพื่อให้มองเห็นบริเวณกว้าง?", opts:["กระจกมองข้างรถยนต์","กระจกแต่งหน้า","กล้องจุลทรรศน์","แว่นขยาย"], a:0, exp:"กระจกนูนใช้ทำกระจกมองข้างรถยนต์และกระจกโค้งตามทางโค้ง เพราะให้มุมมองกว้างกว่ากระจกเงาราบ"}
+  ];
+
+  var LENGTH_OPTIONS = [10, 20, "all"];
+
+  /* ================= STATE ================= */
+  var selectedTopics = {};
+  TOPICS.forEach(function(t){ selectedTopics[t.id] = true; });
+  var selectedLength = 10;
+  var quiz = [];
+  var qi = 0;
+  var score = 0;
+  var streak = 0;
+  var bestStreak = 0;
+  var wrongAnswers = [];
+  var answeredCurrent = false;
+
+  /* ================= HELPERS ================= */
+  function $(id){ return document.getElementById(id); }
+  function shuffle(arr){
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    return a;
+  }
+  function topicName(id){
+    for (var i=0;i<TOPICS.length;i++){ if (TOPICS[i].id===id) return TOPICS[i].em+" "+TOPICS[i].name; }
+    return id;
+  }
+  function safeGet(key){
+    try{
+      var v = window.localStorage.getItem(key);
+      return v ? JSON.parse(v) : null;
+    }catch(e){ return null; }
+  }
+  function safeSet(key, val){
+    try{ window.localStorage.setItem(key, JSON.stringify(val)); }catch(e){}
+  }
+
+  /* ================= BUILD SUMMARY ================= */
+  function buildSummary(){
+    var container = $("viewSummary");
+    var html = "";
+    TOPICS.forEach(function(t, idx){
+      var data = SUMMARY[t.id];
+      html += '<div class="topic-card'+(idx===0?' open':'')+'" data-id="'+t.id+'">'+
+        '<div class="topic-head" data-toggle="'+t.id+'">'+
+          '<div class="icon">'+data.icon+'</div>'+
+          '<h3>'+t.name+'</h3>'+
+          '<div class="chev">▾</div>'+
+        '</div>'+
+        '<div class="topic-body">'+data.html+'</div>'+
+      '</div>';
+    });
+    container.innerHTML = html;
+    container.querySelectorAll(".topic-head").forEach(function(head){
+      head.addEventListener("click", function(){
+        head.parentElement.classList.toggle("open");
+      });
+    });
+  }
+
+  /* ================= BUILD GAME SETUP ================= */
+  function buildChips(){
+    var grid = $("chipGrid");
+    grid.innerHTML = "";
+    TOPICS.forEach(function(t){
+      var chip = document.createElement("div");
+      chip.className = "chip selected";
+      chip.dataset.id = t.id;
+      chip.innerHTML = '<span class="em">'+t.em+'</span><span>'+t.name+'</span>';
+      chip.addEventListener("click", function(){
+        selectedTopics[t.id] = !selectedTopics[t.id];
+        chip.classList.toggle("selected", selectedTopics[t.id]);
+        refreshStartState();
+      });
+      grid.appendChild(chip);
+    });
+  }
+
+  function buildLengthRow(){
+    var row = $("lengthRow");
+    row.innerHTML = "";
+    var labels = {10:"10 ข้อ", 20:"20 ข้อ", "all":"ทั้งหมด"};
+    LENGTH_OPTIONS.forEach(function(len){
+      var btn = document.createElement("div");
+      btn.className = "len-btn" + (len === selectedLength ? " selected" : "");
+      btn.textContent = labels[len];
+      btn.addEventListener("click", function(){
+        selectedLength = len;
+        row.querySelectorAll(".len-btn").forEach(function(b){ b.classList.remove("selected"); });
+        btn.classList.add("selected");
+      });
+      row.appendChild(btn);
+    });
+  }
+
+  function refreshStartState(){
+    var anySelected = TOPICS.some(function(t){ return selectedTopics[t.id]; });
+    $("startBtn").disabled = !anySelected;
+  }
+
+  function updateBestScoreLabel(){
+    var best = safeGet("sciquiz_best");
+    if (best && best.total){
+      $("bestScoreLabel").textContent = best.score + "/" + best.total + " (" + Math.round(best.score/best.total*100) + "%)";
+    }
+  }
+
+  $("chipAllToggle").addEventListener("click", function(){
+    var allSelected = TOPICS.every(function(t){ return selectedTopics[t.id]; });
+    TOPICS.forEach(function(t){ selectedTopics[t.id] = !allSelected; });
+    document.querySelectorAll(".chip").forEach(function(chip){
+      chip.classList.toggle("selected", selectedTopics[chip.dataset.id]);
+    });
+    refreshStartState();
+  });
+
+  /* ================= QUIZ FLOW ================= */
+  $("startBtn").addEventListener("click", function(){
+    var pool = QUESTIONS.filter(function(q){ return selectedTopics[q.topic]; });
+    pool = shuffle(pool);
+    var n = selectedLength === "all" ? pool.length : Math.min(selectedLength, pool.length);
+    quiz = pool.slice(0, n);
+    qi = 0; score = 0; streak = 0; bestStreak = 0; wrongAnswers = [];
+    $("gameSetup").style.display = "none";
+    $("gameResult").style.display = "none";
+    $("gamePlay").style.display = "block";
+    renderQuestion();
+  });
+
+  function renderQuestion(){
+    answeredCurrent = false;
+    var item = quiz[qi];
+    $("progressFill").style.width = Math.round((qi/quiz.length)*100) + "%";
+    $("streakLabel").textContent = "🔥 " + streak;
+    $("qTopicTag").textContent = topicName(item.topic);
+    $("qText").textContent = (qi+1) + ". " + item.q;
+
+    var optsWrap = $("qOptions");
+    optsWrap.innerHTML = "";
+    var letters = ["ก","ข","ค","ง"];
+    var order = shuffle(item.opts.map(function(text, idx){ return {text:text, isCorrect: idx===item.a}; }));
+    order.forEach(function(opt, idx){
+      var btn = document.createElement("div");
+      btn.className = "opt";
+      btn.innerHTML = '<span class="letter">'+letters[idx]+'</span><span>'+opt.text+'</span>';
+      btn.addEventListener("click", function(){
+        if (answeredCurrent) return;
+        answeredCurrent = true;
+        var allOpts = optsWrap.querySelectorAll(".opt");
+        allOpts.forEach(function(o){ o.classList.add("disabled"); });
+        if (opt.isCorrect){
+          btn.classList.add("correct");
+          score++;
+          streak++;
+          bestStreak = Math.max(bestStreak, streak);
+          $("qFeedback").className = "feedback show ok";
+          $("qFeedback").textContent = "✅ ถูกต้อง! " + item.exp;
+        } else {
+          btn.classList.add("wrong");
+          allOpts.forEach(function(o, i2){
+            if (order[i2].isCorrect) o.classList.add("correct");
+          });
+          streak = 0;
+          wrongAnswers.push({q:item.q, your:opt.text, correct:item.opts[item.a], exp:item.exp, topic:item.topic});
+          $("qFeedback").className = "feedback show no";
+          $("qFeedback").textContent = "❌ ยังไม่ถูก คำตอบที่ถูกคือ \"" + item.opts[item.a] + "\" — " + item.exp;
+        }
+        $("streakLabel").textContent = "🔥 " + streak;
+        $("nextBtn").classList.add("show");
+      });
+      optsWrap.appendChild(btn);
+    });
+    $("qFeedback").className = "feedback";
+    $("qFeedback").textContent = "";
+    $("nextBtn").classList.remove("show");
+  }
+
+  $("nextBtn").addEventListener("click", function(){
+    qi++;
+    if (qi >= quiz.length){
+      showResult();
+    } else {
+      renderQuestion();
+    }
+  });
+
+  function showResult(){
+    $("progressFill").style.width = "100%";
+    $("gamePlay").style.display = "none";
+    $("gameResult").style.display = "block";
+    var total = quiz.length;
+    var pct = total ? Math.round((score/total)*100) : 0;
+    $("resultScore").textContent = score;
+    $("resultTotal").textContent = total;
+    $("resultPercent").textContent = pct;
+
+    var emoji, verdictText, verdictClass;
+    if (pct >= 80){ emoji="🏆"; verdictText="พร้อมสอบแล้ว เก่งมาก!"; verdictClass="verdict-pass"; }
+    else if (pct >= 50){ emoji="💪"; verdictText="ใกล้แล้ว ทบทวนอีกนิด"; verdictClass="verdict-mid"; }
+    else { emoji="📚"; verdictText="กลับไปอ่านสรุปอีกรอบนะ"; verdictClass="verdict-low"; }
+    $("resultEmoji").textContent = emoji;
+    $("resultVerdict").textContent = verdictText;
+    $("resultVerdict").className = "result-verdict " + verdictClass;
+
+    var best = safeGet("sciquiz_best");
+    if (!best || (score/total) > (best.score/best.total)){
+      safeSet("sciquiz_best", {score:score, total:total});
+    }
+
+    var reviewPanel = $("reviewPanel");
+    var reviewList = $("reviewList");
+    if (wrongAnswers.length === 0){
+      reviewPanel.style.display = "none";
+    } else {
+      reviewPanel.style.display = "block";
+      reviewList.innerHTML = wrongAnswers.map(function(w){
+        return '<div class="review-item">'+
+          '<div class="q">'+topicName(w.topic)+' — '+w.q+'</div>'+
+          '<div class="your">คำตอบของคุณ: '+w.your+'</div>'+
+          '<div class="correct-ans">คำตอบที่ถูก: '+w.correct+'</div>'+
+          '<div class="exp">'+w.exp+'</div>'+
+        '</div>';
+      }).join("");
+    }
+  }
+
+  $("retryBtn").addEventListener("click", function(){
+    $("gameResult").style.display = "none";
+    $("gameSetup").style.display = "block";
+    updateBestScoreLabel();
+  });
+  $("backBtn").addEventListener("click", function(){
+    $("gameResult").style.display = "none";
+    $("gameSetup").style.display = "block";
+    updateBestScoreLabel();
+  });
+
+  /* ================= TABS ================= */
+  $("tabSummaryBtn").addEventListener("click", function(){
+    $("tabSummaryBtn").classList.add("active");
+    $("tabGameBtn").classList.remove("active");
+    $("viewSummary").classList.add("active");
+    $("viewGame").classList.remove("active");
+  });
+  $("tabGameBtn").addEventListener("click", function(){
+    $("tabGameBtn").classList.add("active");
+    $("tabSummaryBtn").classList.remove("active");
+    $("viewGame").classList.add("active");
+    $("viewSummary").classList.remove("active");
+  });
+
+  /* ================= INIT ================= */
+  buildSummary();
+  buildChips();
+  buildLengthRow();
+  refreshStartState();
+  updateBestScoreLabel();
+})();
+</script>
+</body>
+</html>
